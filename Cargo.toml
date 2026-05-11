@@ -1,0 +1,27 @@
+[package]
+name = "se-pkg"
+version = "3.8.5"
+edition = "2024"
+description = "Universal package manager wrapper CLI tool"
+license = "MIT"
+repository = "https://github.com/barryC12/se-pkg"
+readme = "README.md"
+build = "build.rs"
+
+[dependencies]
+dirs = "5"
+
+[build-dependencies]
+dirs = "5"
+
+[[bin]]
+name = "se"
+path = "src/main.rs"
+
+include = [
+    "src/**/*",
+    "man/se.1",
+    "scripts/se-pkg-paru-helper",
+    "README.md",
+    "LICENSE",
+]

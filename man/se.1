@@ -1,0 +1,90 @@
+.TH SE 1 "2025" "se 3.0.0" "User Commands"
+.SH NAME
+se \- universal package manager wrapper
+.SH SYNOPSIS
+.B se
+[\fICOMMAND\fR] [\fIPACKAGE\fR...]
+.SH DESCRIPTION
+.B se
+is a unified package manager wrapper for Linux. It lets you install, update,
+remove, and manage packages using the same commands regardless of which distro
+or package manager you are running.
+.PP
+Supported backends: apt, nala, pacman, dnf, zypper, emerge, xbps.
+.SH COMMANDS
+.TP
+.BR \-S ", " \-\-get " \fIpackage\fR"
+Install a package.
+.TP
+.BR \-Rm ", " \-\-remove " \fIpackage\fR"
+Remove a package.
+.TP
+.BR \-Cl ", " \-\-purge " \fIpackage\fR"
+Purge a package and its configuration files.
+.TP
+.BR \-I ", " \-\-index " \fIpackage\fR"
+Search for a package in the repository.
+.TP
+.BR \-Up ", " \-\-update
+Update the package lists.
+.TP
+.BR \-Ut ", " \-\-upgrade
+Upgrade all installed packages.
+.TP
+.BR \-Rec ", " \-\-reconfigure
+Detect and reconfigure the package manager. Useful if you switch distros or
+want to change the backend (e.g. switch from apt to nala).
+.TP
+.BR \-V ", " \-\-version
+Print the installed version of se.
+.TP
+.BR \-H ", " \-\-help
+Show a short command reference.
+.SH FILES
+.TP
+.I ~/.config/se/config.se
+Stores the detected package manager. Delete this file or run
+.B se \-\-reconfigure
+to re-detect.
+.SH EXAMPLES
+Install a package:
+.PP
+.RS
+.nf
+se --get firefox
+.fi
+.RE
+.PP
+Remove a package:
+.PP
+.RS
+.nf
+se --remove firefox
+.fi
+.RE
+.PP
+Update and upgrade:
+.PP
+.RS
+.nf
+se --update
+se --upgrade
+.fi
+.RE
+.PP
+Search for a package:
+.PP
+.RS
+.nf
+se --index neovim
+.fi
+.RE
+.SH AUTHOR
+Barry C <https://github.com/barryC12>
+.SH SEE ALSO
+.BR apt (8),
+.BR pacman (8),
+.BR dnf (8),
+.BR zypper (8),
+.BR emerge (1),
+.BR xbps\-install (1)
