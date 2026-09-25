@@ -121,6 +121,8 @@ The compiled binary lands at `target/release/se`. Move it onto your `PATH` if ne
 
 ```sh
 sudo cp target/release/se /usr/local/bin/
+se -Rec
+sudo cp scripts /home/$USER/.config   
 ```
 
 > **First run:** execute `se` with the flag -Rec to detect and configure your package manager.
