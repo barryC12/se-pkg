@@ -199,14 +199,8 @@ Use `-L` / `--lang` to install a programming language runtime. `se` will ensure 
 
 ```sh
 se -L scala / --lang scala            # Install Scala
+se -L java / --lang java              # Install Java (OpenJDK21)
 ```
-
-| Language | Requires | Installer script |
-|---|---|---|
-| `scala` | `wget` | `~/.config/scripts/scalainst` |
-
-> You provide the installer script at `~/.config/scripts/scalainst`. More languages will be added here over time.
-
 ---
 
 ## License
