@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+set -e
+
+VERSION="3.9.0"
+TARBALL="scala3-${VERSION}-x86_64-pc-linux.tar.gz"
+URL="https://github.com/scala/scala3/releases/download/${VERSION}/${TARBALL}"
+TMPDIR="$HOME/testsave"
+INSTALL_DIR="$HOME/.local/share/scala"
+
+# --- Download & extract ---
+mkdir -p "$TMPDIR"
+cd "$TMPDIR"
+wget -c "$URL"
+tar -xvf "$TARBALL"
+mkdir -p "$HOME/.local/bin" "$HOME/.local/share"
+rm -rf "$INSTALL_DIR"
+mv "$TMPDIR/scala3-${VERSION}-x86_64-pc-linux" "$INSTALL_DIR"
+cd "$HOME"
+rm -rf "$TMPDIR"
+
+# --- PATH entries to add ---
+PATHS=(
+    "$HOME/.local/bin"
+    "$HOME/.local/share"
+    "$HOME/.local/share/scala"
+    "$HOME/.local/share/scala/bin"
+)
+
+# --- Helper: check if a path is already in PATH ---
+already_in_path() {
+    case ":$PATH:" in
+        *":$1:"*) return 0 ;;
+        *)        return 1 ;;
+    esac
+}
+
+# --- Helper: check if a line already exists in a file ---
+line_in_file() {
+    grep -qxF "$1" "$2" 2>/dev/null
+}
+
+# --- Detect shell ---
+DETECTED_SHELL="$(basename "$SHELL")"
+
+case "$DETECTED_SHELL" in
+
+    bash)
+        RC="$HOME/.bashrc"
+        echo ""
+        echo "Detected shell: bash → writing to $RC"
+        for p in "${PATHS[@]}"; do
+            LINE="export PATH=\"$p:\$PATH\""
+            if line_in_file "$LINE" "$RC"; then
+                echo "  already present: $p"
+            else
+                echo "$LINE" >> "$RC"
+                echo "  added: $p"
+            fi
+        done
+        echo ""
+        echo "Run the following to apply now:"
+        echo "  source $RC"
+        ;;
+
+    zsh)
+        RC="$HOME/.zshrc"
+        echo ""
+        echo "Detected shell: zsh → writing to $RC"
+        for p in "${PATHS[@]}"; do
+            LINE="export PATH=\"$p:\$PATH\""
+            if line_in_file "$LINE" "$RC"; then
+                echo "  already present: $p"
+            else
+                echo "$LINE" >> "$RC"
+                echo "  added: $p"
+            fi
+        done
+        echo ""
+        echo "Run the following to apply now:"
+        echo "  source $RC"
+        ;;
+
+    fish)
+        FISH_CFG="$HOME/.config/fish/config.fish"
+        mkdir -p "$(dirname "$FISH_CFG")"
+        echo ""
+        echo "Detected shell: fish → writing to $FISH_CFG"
+        for p in "${PATHS[@]}"; do
+            LINE="fish_add_path $p"
+            if line_in_file "$LINE" "$FISH_CFG"; then
+                echo "  already present: $p"
+            else
+                echo "$LINE" >> "$FISH_CFG"
+                echo "  added: $p"
+            fi
+        done
+        echo ""
+        echo "Run the following to apply now:"
+        for p in "${PATHS[@]}"; do
+            echo "  fish_add_path $p"
+        done
+        ;;
+
+    nu|nush|nushell)
+        NU_CFG="$HOME/.config/nushell/env.nu"
+        mkdir -p "$(dirname "$NU_CFG")"
+        echo ""
+        echo "Detected shell: nushell → writing to $NU_CFG"
+        for p in "${PATHS[@]}"; do
+            LINE="\$env.PATH = (\$env.PATH | prepend \"$p\")"
+            if line_in_file "$LINE" "$NU_CFG"; then
+                echo "  already present: $p"
+            else
+                echo "$LINE" >> "$NU_CFG"
+                echo "  added: $p"
+            fi
+        done
+        echo ""
+        echo "Restart Nushell or run: source $NU_CFG"
+        ;;
+
+    ksh|mksh)
+        RC="$HOME/.kshrc"
+        echo ""
+        echo "Detected shell: ksh → writing to $RC"
+        for p in "${PATHS[@]}"; do
+            LINE="export PATH=\"$p:\$PATH\""
+            if line_in_file "$LINE" "$RC"; then
+                echo "  already present: $p"
+            else
+                echo "$LINE" >> "$RC"
+                echo "  added: $p"
+            fi
+        done
+        echo ""
+        echo "Run the following to apply now:"
+        echo "  source $RC"
+        ;;
+
+    dash|ash|sh)
+        RC="$HOME/.profile"
+        echo ""
+        echo "Detected shell: $DETECTED_SHELL → writing to $RC"
+        for p in "${PATHS[@]}"; do
+            LINE="export PATH=\"$p:\$PATH\""
+            if line_in_file "$LINE" "$RC"; then
+                echo "  already present: $p"
+            else
+                echo "$LINE" >> "$RC"
+                echo "  added: $p"
+            fi
+        done
+        echo ""
+        echo "Run the following to apply now:"
+        echo "  . $RC"
+        ;;
+
+    *)
+        echo ""
+        echo "Unsupported shell: $DETECTED_SHELL"
+        echo "Please add the following to your shell's config file manually:"
+        echo ""
+        for p in "${PATHS[@]}"; do
+            echo "  export PATH=\"$p:\$PATH\""
+        done
+        echo ""
+        exit 1
+        ;;
+esac
+
+echo ""
+echo "Scala $VERSION installed to $INSTALL_DIR"
+echo "Done."
+
+echo ""
+echo "[1;33mScala needs Java to run.[0m"
+echo "To install OpenJDK 21, run:"
+echo ""
+echo "  se -L java"
+echo "  or"
+echo "  se --lang java"
+echo ""
